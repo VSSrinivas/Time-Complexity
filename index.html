@@ -3,16 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Complexity Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Advanced Time Complexity Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4cb963;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --error-color: #e63946;
+            --warning-color: #ff9f1c;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #5d7fb9;
+            --secondary-color: #1a73b9;
+            --accent-color: #5cc973;
+            --background-color: #1a1a2e;
+            --card-color: #16213e;
+            --text-color: #e6e6e6;
+            --error-color: #ff6b6b;
+            --warning-color: #ffb347;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            resize: vertical;
+            background-color: var(--card-color);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .calculate-btn {
+            background-color: var(--accent-color);
+            color: white;
+            flex: 1;
+        }
+
+        .calculate-btn:hover {
+            background-color: #3da352;
+        }
+
+        .clear-btn {
+            background-color: #e0e0e0;
+            color: var(--text-color);
+        }
+
+        .clear-btn:hover {
+            background-color: #d0d0d0;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(74, 111, 165, 0.05);
+            display: none;
+        }
+
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .complexity {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--secondary-color);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .details {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: var(--error-color);
+            margin-top: 10px;
+            display: none;
+        }
+
+        .examples {
+            margin-top: 30px;
+        }
+
+        .examples h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .example-btn {
+            background-color: var(--primary-color);
+            color: white;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .example-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .complexity-legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .complexity-item {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Time Complexity Calculator</h1>
-        <textarea id="inputCode" placeholder="Paste your code here..."></textarea>
-        <button onclick="calculateTimeComplexity()">Calculate Time Complexity</button>
-        <div id="result"></div>
+        <div class="header">
+            <div>
+                <h1>Time Complexity Calculator</h1>
+                <p class="subtitle">Analyze your code's time complexity</p>
+            </div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </div>
+        
+        <div class="code-container">
+            <textarea id="inputCode" placeholder="Paste your code here..."></textarea>
+        </div>
+        
+        <div class="controls">
+            <button class="calculate-btn" onclick="calculateTimeComplexity()">Calculate Time Complexity</button>
+            <button class="clear-btn" onclick="clearCode()">Clear</button>
+        </div>
+        
+        <div class="error" id="errorMessage"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="result-title">Estimated Time Complexity:</div>
+            <div class="complexity" id="complexityResult">O(1)</div>
+            <div class="explanation" id="complexityExplanation"></div>
+            <div class="details" id="complexityDetails"></div>
+        </div>
+        
+        <div class="examples">
+            <h3>Try Examples:</h3>
+            <button class="example-btn" onclick="loadExample('linear')">Linear Search</button>
+            <button class="example-btn" onclick="loadExample('binary')">Binary Search</button>
+            <button class="example-btn" onclick="loadExample('bubble')">Bubble Sort</button>
+            <button class="example-btn" onclick="loadExample('merge')">Merge Sort</button>
+        </div>
+        
+        <div class="complexity-legend">
+            <div class="complexity-item">O(1) - Constant</div>
+            <div class="complexity-item">O(log n) - Logarithmic</div>
+            <div class="complexity-item">O(n) - Linear</div>
+            <div class="complexity-item">O(n log n) - Linearithmic</div>
+            <div class="complexity-item">O(n²) - Quadratic</div>
+            <div class="complexity-item">O(2ⁿ) - Exponential</div>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                this.textContent = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                this.textContent = '☀️';
+            }
+        });
+
+        // Example code snippets
+        const examples = {
+            linear: `// Linear search example
+function linearSearch(arr, target) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === target) {
+            return i;
+        }
+    }
+    return -1;
+}`,
+
+            binary: `// Binary search example
+function binarySearch(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        
+        if (arr[mid] === target) {
+            return mid;
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;
+}`,
+
+            bubble: `// Bubble sort example
+function bubbleSort(arr) {
+    const n = arr.length;
+    
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap elements
+                const temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    
+    return arr;
+}`,
+
+            merge: `// Merge sort example
+function mergeSort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    const result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] < right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}`
+        };
+
+        function loadExample(exampleName) {
+            document.getElementById('inputCode').value = examples[exampleName];
+            hideResult();
+            hideError();
+        }
+
+        function clearCode() {
+            document.getElementById('inputCode').value = '';
+            hideResult();
+            hideError();
+        }
+
+        function hideResult() {
+            document.getElementById('resultContainer').style.display = 'none';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            hideResult();
+        }
+
+        function calculateTimeComplexity() {
+            const code = document.getElementById('inputCode').value;
+            hideError();
+            
+            if (!code.trim()) {
+                showError('Please enter some code to analyze.');
+                return;
+            }
+
+            try {
+                const analysis = analyzeCodeComplexity(code);
+                displayResult(analysis);
+            } catch (error) {
+                showError('Error analyzing code: ' + error.message);
+            }
+        }
+
+        function analyzeCodeComplexity(code) {
+            // Remove comments and strings to avoid false positives
+            const cleanedCode = code
+                .replace(/\/\/.*$/gm, '')  // Remove single line comments
+                .replace(/\/\*[\s\S]*?\*\//g, '')  // Remove multi-line comments
+                .replace(/".*?"/g, '""')  // Replace string content
+                .replace(/'.*?'/g, "''");  // Replace char content
+
+            const lines = cleanedCode.split('\n');
+            let maxDepth = 0;
+            let currentDepth = 0;
+            let hasRecursion = false;
+            let hasDivideAndConquer = false;
+            let hasLogarithmic = false;
+            
+            // Check for recursion
+            if (cleanedCode.includes('function') && cleanedCode.match(/function\s+\w+.*\{/g)) {
+                const functionNames = [];
+                const functionCalls = [];
+                
+                // Extract function names
+                const functionMatches = cleanedCode.matchAll(/function\s+(\w+)/g);
+                for (const match of functionMatches) {
+                    functionNames.push(match[1]);
+                }
+                
+                // Check for recursive calls
+                functionNames.forEach(name => {
+                    if (cleanedCode.includes(`${name}(`)) {
+                        hasRecursion = true;
+                    }
+                });
+            }
+            
+            // Analyze loops and nesting
+            lines.forEach(line => {
+                line = line.trim();
+                
+                // Check for loops
+                if (line.startsWith('for') || line.startsWith('while') || line.includes(' for (') || line.includes(' while (')) {
+                    currentDepth++;
+                    if (currentDepth > maxDepth) {
+                        maxDepth = currentDepth;
+                    }
+                    
+                    // Check for logarithmic patterns (e.g., i *= 2 or i = i / 2)
+                    if (line.includes('*=') || line.includes('/=') || 
+                        line.includes('i * 2') || line.includes('i / 2') ||
+                        line.includes('i << 1') || line.includes('i >> 1')) {
+                        hasLogarithmic = true;
+                    }
+                } 
+                // Check for divide and conquer patterns
+                else if (line.includes('Math.floor') || line.includes('Math.ceil') || 
+                         line.includes('length / 2') || line.includes('slice(')) {
+                    hasDivideAndConquer = true;
+                }
+                // Check for closing braces
+                else if (line === '}' || line.includes('}')) {
+                    currentDepth = Math.max(0, currentDepth - 1);
+                }
+            });
+
+            // Determine time complexity
+            let complexity = 'O(1)';
+            let explanation = 'Constant time - execution time does not depend on input size.';
+            let details = 'No loops detected that depend on input size.';
+
+            if (hasRecursion && hasDivideAndConquer) {
+                complexity = 'O(n log n)';
+                explanation = 'Linearithmic time - common in efficient sorting algorithms like merge sort.';
+                details = 'Detected recursion with divide and conquer pattern.';
+            } else if (hasRecursion) {
+                complexity = 'O(n)';
+                explanation = 'Linear time - recursion without divide and conquer typically results in linear complexity.';
+                details = 'Detected recursive function calls.';
+            } else if (hasLogarithmic) {
+                complexity = 'O(log n)';
+                explanation = 'Logarithmic time - common in algorithms that repeatedly divide the problem size.';
+                details = 'Detected loops with logarithmic progression.';
+            } else if (maxDepth >= 3) {
+                complexity = `O(n^${maxDepth})`;
+                explanation = `Polynomial time - ${maxDepth} nested loops detected.`;
+                details = `Found ${maxDepth} levels of nested loops.`;
+            } else if (maxDepth === 2) {
+                complexity = 'O(n²)';
+                explanation = 'Quadratic time - common in algorithms with two nested loops.';
+                details = 'Found 2 levels of nested loops.';
+            } else if (maxDepth === 1) {
+                complexity = 'O(n)';
+                explanation = 'Linear time - execution time grows proportionally with input size.';
+                details = 'Found 1 loop that depends on input size.';
+            }
+
+            return {
+                complexity,
+                explanation,
+                details,
+                maxDepth,
+                hasRecursion,
+                hasDivideAndConquer,
+                hasLogarithmic
+            };
+        }
+
+        function displayResult(analysis) {
+            document.getElementById('complexityResult').textContent = analysis.complexity;
+            document.getElementById('complexityExplanation').textContent = analysis.explanation;
+            document.getElementById('complexityDetails').textContent = analysis.details;
+            document.getElementById('resultContainer').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
